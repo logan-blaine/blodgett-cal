@@ -1,0 +1,28 @@
+[project]
+name = "blodgett-cal"
+version = "0.1.0"
+description = "Scrape the Harvard Recreation Blodgett Pool schedule and publish an ICS feed."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "beautifulsoup4>=4.13.0",
+  "requests>=2.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+]
+
+[project.scripts]
+blodgett-cal = "blodgett_cal.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/blodgett_cal"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

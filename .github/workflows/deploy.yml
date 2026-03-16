@@ -1,0 +1,65 @@
+name: Build and Deploy Blodgett Calendar
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: uv sync --locked --extra dev
+
+      - name: Build site
+        id: build_site
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            output="$(uv run blodgett-cal build --output site --skip-outside-refresh-window 2>&1)"
+          else
+            output="$(uv run blodgett-cal build --output site 2>&1)"
+          fi
+          printf '%s\n' "$output"
+          if printf '%s\n' "$output" | grep -q '^REFRESHED=true$'; then
+            echo "refreshed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "refreshed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'schedule' || steps.build_site.outputs.refreshed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name != 'schedule' || steps.build_site.outputs.refreshed == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
