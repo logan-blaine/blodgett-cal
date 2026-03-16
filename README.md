@@ -2,6 +2,16 @@
 
 This project scrapes the `MAC Pool & Blodgett Pool` accordion on the Harvard Recreation facility-hours page and publishes a subscribable ICS feed for Blodgett Pool only.
 
+## Use the calendar
+
+Site:
+[https://logan-blaine.github.io/blodgett-cal/](https://logan-blaine.github.io/blodgett-cal/)
+
+Direct ICS feed:
+[https://logan-blaine.github.io/blodgett-cal/blodgett-pool.ics](https://logan-blaine.github.io/blodgett-cal/blodgett-pool.ics)
+
+To subscribe in a calendar app, use the direct ICS feed URL above as a calendar subscription URL.
+
 ## Local usage
 
 ```bash
@@ -9,7 +19,7 @@ uv sync --extra dev
 uv run blodgett-cal build --output site
 ```
 
-The generated feed is written to `site/blodgett-pool.ics`, with a small landing page at `site/index.html`.
+The generated feed is written to `site/blodgett-pool.ics`, with a landing page at `site/index.html`.
 
 Useful flags:
 
@@ -22,3 +32,8 @@ uv run blodgett-cal build --source-url https://recreation.gocrimson.com/sports/2
 ## Deployment
 
 GitHub Actions builds and deploys the `site/` directory to GitHub Pages. Scheduled runs happen hourly, but the build command skips outside the target Eastern Time refresh windows of `5am`, `1pm`, and `5pm`.
+
+After GitHub Pages is enabled with `Source = GitHub Actions`, the public URLs are:
+
+- Site: `https://logan-blaine.github.io/blodgett-cal/`
+- Feed: `https://logan-blaine.github.io/blodgett-cal/blodgett-pool.ics`
