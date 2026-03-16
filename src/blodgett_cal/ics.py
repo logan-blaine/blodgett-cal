@@ -162,8 +162,40 @@ def render_index(
 
       .week-grid {{
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-columns: 4rem repeat(7, minmax(8.5rem, 1fr));
         gap: 1rem;
+        min-width: 74rem;
+        align-items: start;
+      }}
+
+      .week-board {{
+        overflow-x: auto;
+        padding-bottom: 0.35rem;
+      }}
+
+      .scale-column {{
+        position: relative;
+      }}
+
+      .scale-spacer {{
+        height: 4.5rem;
+      }}
+
+      .scale-timeline {{
+        position: relative;
+        height: 32rem;
+      }}
+
+      .scale-timeline-inner {{
+        position: absolute;
+        inset: 0.85rem 0 0.85rem 0;
+      }}
+
+      .scale-line {{
+        position: absolute;
+        inset: 0 0.35rem 0 auto;
+        width: 1px;
+        background: rgba(29, 27, 26, 0.12);
       }}
 
       .day-card {{
@@ -185,6 +217,21 @@ def render_index(
       .timeline {{
         position: relative;
         height: 32rem;
+        overflow: visible;
+      }}
+
+      .time-marker {{
+        position: absolute;
+        right: 0.8rem;
+        transform: translateY(-50%);
+        font-size: 0.72rem;
+        color: rgba(29, 27, 26, 0.62);
+        white-space: nowrap;
+      }}
+
+      .timeline-inner {{
+        position: absolute;
+        inset: 0.85rem 0.65rem;
         background-image:
           repeating-linear-gradient(
             to bottom,
@@ -193,28 +240,12 @@ def render_index(
             transparent 1px,
             transparent 12.5%
           );
-      }}
-
-      .time-markers {{
-        position: absolute;
-        inset: 0 auto 0 0;
-        width: 3rem;
-        border-right: 1px solid rgba(29, 27, 26, 0.08);
-        background: rgba(246, 240, 232, 0.55);
-      }}
-
-      .time-marker {{
-        position: absolute;
-        left: 0.45rem;
-        transform: translateY(-50%);
-        font-size: 0.72rem;
-        color: rgba(29, 27, 26, 0.62);
+        border-radius: 1rem;
       }}
 
       .day-lane {{
         position: absolute;
-        inset: 0 0 0 3rem;
-        padding: 0.65rem;
+        inset: 0;
       }}
 
       .block-chip {{
@@ -248,7 +279,7 @@ def render_index(
 
       .day-empty {{
         position: absolute;
-        inset: 0 0 0 3rem;
+        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -258,25 +289,18 @@ def render_index(
         padding: 1rem;
       }}
 
-      @media (max-width: 1200px) {{
-        .week-grid {{
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-        }}
-      }}
-
-      @media (max-width: 992px) {{
-        .week-grid {{
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }}
-      }}
-
       @media (max-width: 576px) {{
         .week-grid {{
-          grid-template-columns: 1fr;
+          min-width: 64rem;
         }}
 
-        .timeline {{
+        .timeline,
+        .scale-timeline {{
           height: 24rem;
+        }}
+
+        .scale-spacer {{
+          height: 4rem;
         }}
       }}
     </style>
@@ -435,8 +459,19 @@ def render_week_overview(blocks: list[PoolBlock], generated_at: datetime) -> str
             </div>
             <div class="small text-secondary">Blocks shown here are pulled from the latest published Harvard schedule snapshot.</div>
           </div>
-          <div class="week-grid">
-            {day_columns}
+          <div class="week-board">
+            <div class="week-grid">
+              <div class="scale-column">
+                <div class="scale-spacer"></div>
+                <div class="scale-timeline">
+                  <div class="scale-timeline-inner">
+                    <div class="scale-line"></div>
+                    {render_time_markers()}
+                  </div>
+                </div>
+              </div>
+              {day_columns}
+            </div>
           </div>
         </div>
       </section>
@@ -461,11 +496,10 @@ def render_day_column(day_date, day_blocks: list[PoolBlock], generated_at: datet
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  {render_time_markers()}
-                </div>
-                <div class="day-lane">
-                  {blocks_html}
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    {blocks_html}
+                  </div>
                 </div>
               </div>
             </article>

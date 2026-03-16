@@ -83,8 +83,40 @@
 
       .week-grid {
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-columns: 4rem repeat(7, minmax(8.5rem, 1fr));
         gap: 1rem;
+        min-width: 74rem;
+        align-items: start;
+      }
+
+      .week-board {
+        overflow-x: auto;
+        padding-bottom: 0.35rem;
+      }
+
+      .scale-column {
+        position: relative;
+      }
+
+      .scale-spacer {
+        height: 4.5rem;
+      }
+
+      .scale-timeline {
+        position: relative;
+        height: 32rem;
+      }
+
+      .scale-timeline-inner {
+        position: absolute;
+        inset: 0.85rem 0 0.85rem 0;
+      }
+
+      .scale-line {
+        position: absolute;
+        inset: 0 0.35rem 0 auto;
+        width: 1px;
+        background: rgba(29, 27, 26, 0.12);
       }
 
       .day-card {
@@ -106,6 +138,21 @@
       .timeline {
         position: relative;
         height: 32rem;
+        overflow: visible;
+      }
+
+      .time-marker {
+        position: absolute;
+        right: 0.8rem;
+        transform: translateY(-50%);
+        font-size: 0.72rem;
+        color: rgba(29, 27, 26, 0.62);
+        white-space: nowrap;
+      }
+
+      .timeline-inner {
+        position: absolute;
+        inset: 0.85rem 0.65rem;
         background-image:
           repeating-linear-gradient(
             to bottom,
@@ -114,28 +161,12 @@
             transparent 1px,
             transparent 12.5%
           );
-      }
-
-      .time-markers {
-        position: absolute;
-        inset: 0 auto 0 0;
-        width: 3rem;
-        border-right: 1px solid rgba(29, 27, 26, 0.08);
-        background: rgba(246, 240, 232, 0.55);
-      }
-
-      .time-marker {
-        position: absolute;
-        left: 0.45rem;
-        transform: translateY(-50%);
-        font-size: 0.72rem;
-        color: rgba(29, 27, 26, 0.62);
+        border-radius: 1rem;
       }
 
       .day-lane {
         position: absolute;
-        inset: 0 0 0 3rem;
-        padding: 0.65rem;
+        inset: 0;
       }
 
       .block-chip {
@@ -169,7 +200,7 @@
 
       .day-empty {
         position: absolute;
-        inset: 0 0 0 3rem;
+        inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -179,25 +210,18 @@
         padding: 1rem;
       }
 
-      @media (max-width: 1200px) {
-        .week-grid {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-        }
-      }
-
-      @media (max-width: 992px) {
-        .week-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
       @media (max-width: 576px) {
         .week-grid {
-          grid-template-columns: 1fr;
+          min-width: 64rem;
         }
 
-        .timeline {
+        .timeline,
+        .scale-timeline {
           height: 24rem;
+        }
+
+        .scale-spacer {
+          height: 4rem;
         }
       }
     </style>
@@ -233,8 +257,18 @@
             </div>
             <div class="small text-secondary">Blocks shown here are pulled from the latest published Harvard schedule snapshot.</div>
           </div>
-          <div class="week-grid">
-            
+          <div class="week-board">
+            <div class="week-grid">
+              <div class="scale-column">
+                <div class="scale-spacer"></div>
+                <div class="scale-timeline">
+                  <div class="scale-timeline-inner">
+                    <div class="scale-line"></div>
+                    <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                  </div>
+                </div>
+              </div>
+              
             <article class="day-card today">
               <div class="day-heading p-3">
                 <div class="d-flex justify-content-between align-items-baseline gap-2">
@@ -243,11 +277,9 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    
                   <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
                     <div class="block-time">10am - 3pm</div>
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
@@ -259,6 +291,7 @@
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
                   </div>
 
+                  </div>
                 </div>
               </div>
             </article>
@@ -272,11 +305,9 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    
                   <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm">
                     <div class="block-time">10am - 3pm</div>
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
@@ -288,6 +319,7 @@
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
                   </div>
 
+                  </div>
                 </div>
               </div>
             </article>
@@ -301,11 +333,9 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    
                   <div class="block-chip has-notes" style="top: 18.750%; height: 37.500%;" title="8 Lane CLOSED 12pm - 1:15pm">
                     <div class="block-time">9am - 3pm</div>
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
@@ -317,6 +347,7 @@
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
                   </div>
 
+                  </div>
                 </div>
               </div>
             </article>
@@ -330,11 +361,9 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    
                   <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
                     <div class="block-time">10am - 3pm</div>
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
@@ -346,6 +375,7 @@
                     <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
                   </div>
 
+                  </div>
                 </div>
               </div>
             </article>
@@ -359,11 +389,10 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  <div class="day-empty">No published block</div>
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    <div class="day-empty">No published block</div>
+                  </div>
                 </div>
               </div>
             </article>
@@ -377,11 +406,10 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  <div class="day-empty">No published block</div>
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    <div class="day-empty">No published block</div>
+                  </div>
                 </div>
               </div>
             </article>
@@ -395,15 +423,15 @@
                 </div>
               </div>
               <div class="timeline">
-                <div class="time-markers">
-                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
-                </div>
-                <div class="day-lane">
-                  <div class="day-empty">No published block</div>
+                <div class="timeline-inner">
+                  <div class="day-lane">
+                    <div class="day-empty">No published block</div>
+                  </div>
                 </div>
               </div>
             </article>
 
+            </div>
           </div>
         </div>
       </section>
