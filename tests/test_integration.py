@@ -40,3 +40,6 @@ def test_build_generates_expected_ics(tmp_path: Path, monkeypatch) -> None:
 
     index_text = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert "./blodgett-pool.ics" in index_text
+    assert "This Week at a Glance" in index_text
+    assert "Mon" in index_text
+    assert "10am - 3pm" in index_text

@@ -80,6 +80,126 @@
         background: #881726;
         border-color: #881726;
       }
+
+      .week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .day-card {
+        border: 1px solid rgba(165, 28, 48, 0.08);
+        border-radius: 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        overflow: hidden;
+      }
+
+      .day-card.today {
+        box-shadow: inset 0 0 0 2px rgba(165, 28, 48, 0.25);
+      }
+
+      .day-heading {
+        border-bottom: 1px solid rgba(29, 27, 26, 0.08);
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.05), rgba(165, 28, 48, 0));
+      }
+
+      .timeline {
+        position: relative;
+        height: 32rem;
+        background-image:
+          repeating-linear-gradient(
+            to bottom,
+            rgba(29, 27, 26, 0.05) 0,
+            rgba(29, 27, 26, 0.05) 1px,
+            transparent 1px,
+            transparent 12.5%
+          );
+      }
+
+      .time-markers {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3rem;
+        border-right: 1px solid rgba(29, 27, 26, 0.08);
+        background: rgba(246, 240, 232, 0.55);
+      }
+
+      .time-marker {
+        position: absolute;
+        left: 0.45rem;
+        transform: translateY(-50%);
+        font-size: 0.72rem;
+        color: rgba(29, 27, 26, 0.62);
+      }
+
+      .day-lane {
+        position: absolute;
+        inset: 0 0 0 3rem;
+        padding: 0.65rem;
+      }
+
+      .block-chip {
+        position: absolute;
+        left: 0.65rem;
+        right: 0.65rem;
+        border-radius: 1rem;
+        padding: 0.55rem 0.6rem;
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.92), rgba(132, 21, 38, 0.96));
+        color: #fff8f1;
+        box-shadow: 0 10px 22px rgba(101, 18, 31, 0.22);
+        overflow: hidden;
+      }
+
+      .block-chip.has-notes {
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.92), rgba(108, 34, 66, 0.96));
+      }
+
+      .block-time {
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.15;
+      }
+
+      .block-note {
+        font-size: 0.72rem;
+        opacity: 0.9;
+        margin-top: 0.3rem;
+        line-height: 1.2;
+      }
+
+      .day-empty {
+        position: absolute;
+        inset: 0 0 0 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(29, 27, 26, 0.55);
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      @media (max-width: 1200px) {
+        .week-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 992px) {
+        .week-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 576px) {
+        .week-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline {
+          height: 24rem;
+        }
+      }
     </style>
   </head>
   <body>
@@ -102,6 +222,192 @@
           </div>
         </div>
       </section>
+
+      
+      <section class="card panel rounded-5 mb-4">
+        <div class="card-body p-4 p-lg-5">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+            <div>
+              <h2 class="h3 mb-1">This Week at a Glance</h2>
+              <p class="text-secondary mb-0">Mar 16 - 22 · Times shown in ET.</p>
+            </div>
+            <div class="small text-secondary">Blocks shown here are pulled from the latest published Harvard schedule snapshot.</div>
+          </div>
+          <div class="week-grid">
+            
+            <article class="day-card today">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Mon</h3>
+                  <span class="text-secondary small">Mar 16</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  
+                  <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
+                    <div class="block-time">10am - 3pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
+                  </div>
+
+
+                  <div class="block-chip has-notes" style="top: 71.875%; height: 21.875%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
+                    <div class="block-time">5:30pm - 9pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
+                  </div>
+
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Tue</h3>
+                  <span class="text-secondary small">Mar 17</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  
+                  <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm">
+                    <div class="block-time">10am - 3pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
+                  </div>
+
+
+                  <div class="block-chip has-notes" style="top: 71.875%; height: 21.875%;" title="8 Lane CLOSED 12pm - 1:15pm">
+                    <div class="block-time">5:30pm - 9pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
+                  </div>
+
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Wed</h3>
+                  <span class="text-secondary small">Mar 18</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  
+                  <div class="block-chip has-notes" style="top: 18.750%; height: 37.500%;" title="8 Lane CLOSED 12pm - 1:15pm">
+                    <div class="block-time">9am - 3pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
+                  </div>
+
+
+                  <div class="block-chip has-notes" style="top: 71.875%; height: 21.875%;" title="8 Lane CLOSED 12pm - 1:15pm">
+                    <div class="block-time">5:30pm - 9pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm</div>
+                  </div>
+
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Thu</h3>
+                  <span class="text-secondary small">Mar 19</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  
+                  <div class="block-chip has-notes" style="top: 25.000%; height: 31.250%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
+                    <div class="block-time">10am - 3pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
+                  </div>
+
+
+                  <div class="block-chip has-notes" style="top: 71.875%; height: 21.875%;" title="8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm">
+                    <div class="block-time">5:30pm - 9pm</div>
+                    <div class="block-note">8 Lane CLOSED 12pm - 1:15pm, 7:30pm-9pm</div>
+                  </div>
+
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Fri</h3>
+                  <span class="text-secondary small">Mar 20</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  <div class="day-empty">No published block</div>
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Sat</h3>
+                  <span class="text-secondary small">Mar 21</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  <div class="day-empty">No published block</div>
+                </div>
+              </div>
+            </article>
+
+
+            <article class="day-card">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">Sun</h3>
+                  <span class="text-secondary small">Mar 22</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  <span class="time-marker" style="top: 0.000%;">6am</span><span class="time-marker" style="top: 12.500%;">8am</span><span class="time-marker" style="top: 25.000%;">10am</span><span class="time-marker" style="top: 37.500%;">12pm</span><span class="time-marker" style="top: 50.000%;">2pm</span><span class="time-marker" style="top: 62.500%;">4pm</span><span class="time-marker" style="top: 75.000%;">6pm</span><span class="time-marker" style="top: 87.500%;">8pm</span><span class="time-marker" style="top: 100.000%;">10pm</span>
+                </div>
+                <div class="day-lane">
+                  <div class="day-empty">No published block</div>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </section>
+
 
       <section class="card panel rounded-5 mb-4">
         <div class="card-body p-4 p-lg-5">

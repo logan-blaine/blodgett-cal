@@ -56,7 +56,7 @@ def run_build(args: argparse.Namespace) -> int:
     calendar_text = build_calendar(blocks, source_url=args.source_url, generated_at=now)
     write_calendar(output_dir / "blodgett-pool.ics", calendar_text)
     (output_dir / "index.html").write_text(
-        render_index(source_url=args.source_url),
+        render_index(blocks=blocks, generated_at=now, source_url=args.source_url),
         encoding="utf-8",
     )
 

@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import datetime, timezone
 from hashlib import sha1
+from html import escape
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from .models import PoolBlock
 
 ET_ZONE = ZoneInfo("America/New_York")
+DISPLAY_START_HOUR = 6
+DISPLAY_END_HOUR = 22
+DISPLAY_TOTAL_MINUTES = (DISPLAY_END_HOUR - DISPLAY_START_HOUR) * 60
 
 
 def build_calendar(blocks: list[PoolBlock], source_url: str, generated_at: datetime | None = None) -> str:
@@ -62,8 +67,16 @@ def write_calendar(path: Path, calendar_text: str) -> None:
     path.write_text(calendar_text, encoding="utf-8")
 
 
-def render_index(ics_name: str = "blodgett-pool.ics", source_url: str = "") -> str:
+def render_index(
+    blocks: list[PoolBlock] | None = None,
+    generated_at: datetime | None = None,
+    ics_name: str = "blodgett-pool.ics",
+    source_url: str = "",
+) -> str:
+    blocks = blocks or []
+    generated_at = (generated_at or datetime.now(timezone.utc)).astimezone(ET_ZONE)
     source_link = source_url or "#"
+    week_overview = render_week_overview(blocks, generated_at)
     return f"""<!doctype html>
 <html lang="en">
   <head>
@@ -146,6 +159,126 @@ def render_index(ics_name: str = "blodgett-pool.ics", source_url: str = "") -> s
         background: #881726;
         border-color: #881726;
       }}
+
+      .week-grid {{
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 1rem;
+      }}
+
+      .day-card {{
+        border: 1px solid rgba(165, 28, 48, 0.08);
+        border-radius: 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        overflow: hidden;
+      }}
+
+      .day-card.today {{
+        box-shadow: inset 0 0 0 2px rgba(165, 28, 48, 0.25);
+      }}
+
+      .day-heading {{
+        border-bottom: 1px solid rgba(29, 27, 26, 0.08);
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.05), rgba(165, 28, 48, 0));
+      }}
+
+      .timeline {{
+        position: relative;
+        height: 32rem;
+        background-image:
+          repeating-linear-gradient(
+            to bottom,
+            rgba(29, 27, 26, 0.05) 0,
+            rgba(29, 27, 26, 0.05) 1px,
+            transparent 1px,
+            transparent 12.5%
+          );
+      }}
+
+      .time-markers {{
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3rem;
+        border-right: 1px solid rgba(29, 27, 26, 0.08);
+        background: rgba(246, 240, 232, 0.55);
+      }}
+
+      .time-marker {{
+        position: absolute;
+        left: 0.45rem;
+        transform: translateY(-50%);
+        font-size: 0.72rem;
+        color: rgba(29, 27, 26, 0.62);
+      }}
+
+      .day-lane {{
+        position: absolute;
+        inset: 0 0 0 3rem;
+        padding: 0.65rem;
+      }}
+
+      .block-chip {{
+        position: absolute;
+        left: 0.65rem;
+        right: 0.65rem;
+        border-radius: 1rem;
+        padding: 0.55rem 0.6rem;
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.92), rgba(132, 21, 38, 0.96));
+        color: #fff8f1;
+        box-shadow: 0 10px 22px rgba(101, 18, 31, 0.22);
+        overflow: hidden;
+      }}
+
+      .block-chip.has-notes {{
+        background: linear-gradient(180deg, rgba(165, 28, 48, 0.92), rgba(108, 34, 66, 0.96));
+      }}
+
+      .block-time {{
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.15;
+      }}
+
+      .block-note {{
+        font-size: 0.72rem;
+        opacity: 0.9;
+        margin-top: 0.3rem;
+        line-height: 1.2;
+      }}
+
+      .day-empty {{
+        position: absolute;
+        inset: 0 0 0 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(29, 27, 26, 0.55);
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 1rem;
+      }}
+
+      @media (max-width: 1200px) {{
+        .week-grid {{
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }}
+      }}
+
+      @media (max-width: 992px) {{
+        .week-grid {{
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }}
+      }}
+
+      @media (max-width: 576px) {{
+        .week-grid {{
+          grid-template-columns: 1fr;
+        }}
+
+        .timeline {{
+          height: 24rem;
+        }}
+      }}
     </style>
   </head>
   <body>
@@ -168,6 +301,8 @@ def render_index(ics_name: str = "blodgett-pool.ics", source_url: str = "") -> s
           </div>
         </div>
       </section>
+
+      {week_overview}
 
       <section class="card panel rounded-5 mb-4">
         <div class="card-body p-4 p-lg-5">
@@ -275,6 +410,140 @@ def render_index(ics_name: str = "blodgett-pool.ics", source_url: str = "") -> s
   </body>
 </html>
 """
+
+
+def render_week_overview(blocks: list[PoolBlock], generated_at: datetime) -> str:
+    week_dates = current_week_dates(generated_at)
+    start_date = week_dates[0]
+    end_date = week_dates[-1]
+    blocks_by_date: dict[datetime.date, list[PoolBlock]] = defaultdict(list)
+    for block in blocks:
+        blocks_by_date[block.date_local].append(block)
+
+    day_columns = "\n".join(
+        render_day_column(day_date, sorted(blocks_by_date.get(day_date, []), key=lambda block: block.start_local), generated_at)
+        for day_date in week_dates
+    )
+
+    return f"""
+      <section class="card panel rounded-5 mb-4">
+        <div class="card-body p-4 p-lg-5">
+          <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+            <div>
+              <h2 class="h3 mb-1">This Week at a Glance</h2>
+              <p class="text-secondary mb-0">{escape(format_date_range(start_date, end_date))} · Times shown in ET.</p>
+            </div>
+            <div class="small text-secondary">Blocks shown here are pulled from the latest published Harvard schedule snapshot.</div>
+          </div>
+          <div class="week-grid">
+            {day_columns}
+          </div>
+        </div>
+      </section>
+"""
+
+
+def render_day_column(day_date, day_blocks: list[PoolBlock], generated_at: datetime) -> str:
+    day_name = day_date.strftime("%a")
+    day_label = day_date.strftime("%b %-d")
+    is_today = day_date == generated_at.date()
+    card_class = "day-card today" if is_today else "day-card"
+    blocks_html = "\n".join(render_block_chip(block) for block in day_blocks)
+    if not blocks_html:
+        blocks_html = '<div class="day-empty">No published block</div>'
+
+    return f"""
+            <article class="{card_class}">
+              <div class="day-heading p-3">
+                <div class="d-flex justify-content-between align-items-baseline gap-2">
+                  <h3 class="h5 mb-0">{escape(day_name)}</h3>
+                  <span class="text-secondary small">{escape(day_label)}</span>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="time-markers">
+                  {render_time_markers()}
+                </div>
+                <div class="day-lane">
+                  {blocks_html}
+                </div>
+              </div>
+            </article>
+"""
+
+
+def render_time_markers() -> str:
+    markers = []
+    for hour in range(DISPLAY_START_HOUR, DISPLAY_END_HOUR + 1, 2):
+        top_pct = ((hour - DISPLAY_START_HOUR) * 60 / DISPLAY_TOTAL_MINUTES) * 100
+        markers.append(
+            f'<span class="time-marker" style="top: {top_pct:.3f}%;">{escape(format_hour_label(hour))}</span>'
+        )
+    return "".join(markers)
+
+
+def render_block_chip(block: PoolBlock) -> str:
+    start_minutes = block.start_local.hour * 60 + block.start_local.minute
+    end_minutes = block.end_local.hour * 60 + block.end_local.minute
+    top_pct = ((start_minutes - DISPLAY_START_HOUR * 60) / DISPLAY_TOTAL_MINUTES) * 100
+    height_pct = ((end_minutes - start_minutes) / DISPLAY_TOTAL_MINUTES) * 100
+    top_pct = max(0.0, min(100.0, top_pct))
+    height_pct = max(6.0, min(100.0 - top_pct, height_pct))
+    notes_text = " | ".join(block.notes)
+    note_html = ""
+    extra_class = ""
+    title_attr = ""
+    if notes_text:
+        extra_class = " has-notes"
+        note_html = f'<div class="block-note">{escape(truncate_note(notes_text))}</div>'
+        title_attr = f' title="{escape(notes_text, quote=True)}"'
+
+    return f"""
+                  <div class="block-chip{extra_class}" style="top: {top_pct:.3f}%; height: {height_pct:.3f}%;"{title_attr}>
+                    <div class="block-time">{escape(format_time_display(block.start_local, block.end_local))}</div>
+                    {note_html}
+                  </div>
+"""
+
+
+def current_week_dates(generated_at: datetime) -> list:
+    start_date = generated_at.date()
+    monday = start_date.fromordinal(start_date.toordinal() - start_date.weekday())
+    return [monday.fromordinal(monday.toordinal() + offset) for offset in range(7)]
+
+
+def format_date_range(start_date, end_date) -> str:
+    if start_date.month == end_date.month:
+        return f"{start_date.strftime('%b')} {start_date.day} - {end_date.day}"
+    return f"{start_date.strftime('%b')} {start_date.day} - {end_date.strftime('%b')} {end_date.day}"
+
+
+def format_hour_label(hour: int) -> str:
+    suffix = "am" if hour < 12 else "pm"
+    display_hour = hour if 1 <= hour <= 12 else hour - 12
+    if display_hour == 0:
+        display_hour = 12
+    return f"{display_hour}{suffix}"
+
+
+def format_time_display(start_local, end_local) -> str:
+    return f"{format_single_time(start_local)} - {format_single_time(end_local)}"
+
+
+def format_single_time(value) -> str:
+    hour = value.hour
+    minute = value.minute
+    suffix = "am" if hour < 12 else "pm"
+    display_hour = hour % 12 or 12
+    if minute == 0:
+        return f"{display_hour}{suffix}"
+    return f"{display_hour}:{minute:02d}{suffix}"
+
+
+def truncate_note(note: str, limit: int = 42) -> str:
+    if len(note) <= limit:
+        return note
+    return note[: limit - 1].rstrip() + "…"
 
 
 def format_utc(value: datetime) -> str:
