@@ -10,6 +10,9 @@ Site:
 Direct ICS feed:
 [https://logan-blaine.github.io/blodgett-cal/blodgett-pool.ics](https://logan-blaine.github.io/blodgett-cal/blodgett-pool.ics)
 
+Harvard Recreation source page:
+[https://recreation.gocrimson.com/sports/2021/5/14/facility-hours](https://recreation.gocrimson.com/sports/2021/5/14/facility-hours)
+
 To subscribe in a calendar app, use the direct ICS feed URL above as a calendar subscription URL.
 
 ## Local usage

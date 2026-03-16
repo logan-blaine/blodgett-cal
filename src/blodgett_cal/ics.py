@@ -62,7 +62,8 @@ def write_calendar(path: Path, calendar_text: str) -> None:
     path.write_text(calendar_text, encoding="utf-8")
 
 
-def render_index(ics_name: str = "blodgett-pool.ics") -> str:
+def render_index(ics_name: str = "blodgett-pool.ics", source_url: str = "") -> str:
+    source_link = source_url or "#"
     return f"""<!doctype html>
 <html lang="en">
   <head>
@@ -160,7 +161,9 @@ def render_index(ics_name: str = "blodgett-pool.ics") -> str:
             <div class="rounded-4 p-4" style="background: rgba(255, 248, 241, 0.12);">
               <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.08em;">Refresh cadence</div>
               <div class="fs-5 fw-semibold">5am, 1pm, 5pm ET</div>
-              <div class="small mt-2 text-white-50">Source: Harvard Recreation facility hours page</div>
+              <div class="small mt-2">
+                <a class="link-light link-underline-opacity-50 link-underline-opacity-100-hover" href="{source_link}">View the Harvard Recreation source page</a>
+              </div>
             </div>
           </div>
         </div>
@@ -242,7 +245,8 @@ def render_index(ics_name: str = "blodgett-pool.ics") -> str:
           <div class="card-body p-4 p-lg-5">
             <h2 class="h4 mb-3">What this feed includes</h2>
             <p class="mb-2">Each open Blodgett block becomes its own calendar event. If Harvard adds day-specific notes like lane closures, those notes are attached to each event for that day.</p>
-            <p class="text-secondary mb-0">Only the Blodgett Pool entries from the <strong>MAC Pool &amp; Blodgett Pool</strong> table are included.</p>
+            <p class="text-secondary mb-2">Only the Blodgett Pool entries from the <strong>MAC Pool &amp; Blodgett Pool</strong> table are included.</p>
+            <p class="mb-0"><a href="{source_link}">Open the current Harvard Recreation schedule page</a></p>
           </div>
         </div>
       </section>

@@ -55,7 +55,10 @@ def run_build(args: argparse.Namespace) -> int:
 
     calendar_text = build_calendar(blocks, source_url=args.source_url, generated_at=now)
     write_calendar(output_dir / "blodgett-pool.ics", calendar_text)
-    (output_dir / "index.html").write_text(render_index(), encoding="utf-8")
+    (output_dir / "index.html").write_text(
+        render_index(source_url=args.source_url),
+        encoding="utf-8",
+    )
 
     print("REFRESHED=true")
     print(f"Generated {len(blocks)} event(s) in {output_dir / 'blodgett-pool.ics'}", file=sys.stderr)
