@@ -308,22 +308,9 @@ def render_index(
   <body>
     <main class="container py-5 py-lg-6">
       <section class="hero rounded-5 p-4 p-md-5 mb-4">
-        <div class="row g-4 align-items-center">
-          <div class="col-lg-8">
-            <p class="hero-tag mb-3">Harvard Recreation scraper</p>
-            <h1 class="display-5 fw-semibold mb-3">Blodgett Pool calendar feed</h1>
-            <p class="lead mb-0">Subscribe once and your calendar will pick up new Blodgett open swim blocks automatically as this site refreshes.</p>
-          </div>
-          <div class="col-lg-4">
-            <div class="rounded-4 p-4" style="background: rgba(255, 248, 241, 0.12);">
-              <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.08em;">Refresh cadence</div>
-              <div class="fs-5 fw-semibold">Every 2 hours · 6am-6pm ET</div>
-              <div class="small mt-2">
-                <a class="link-light link-underline-opacity-50 link-underline-opacity-100-hover" href="{source_link}">View the Harvard Recreation source page</a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p class="hero-tag mb-3">Harvard Recreation scraper</p>
+        <h1 class="display-5 fw-semibold mb-3">Blodgett Pool calendar feed</h1>
+        <p class="lead mb-0">Subscribe once and your calendar will pick up new Blodgett open swim blocks automatically as this site refreshes.</p>
       </section>
 
       {week_overview}
@@ -400,13 +387,12 @@ def render_index(
       </div>
 
       <section class="mt-4">
-        <div class="card panel rounded-5">
-          <div class="card-body p-4 p-lg-5">
-            <h2 class="h4 mb-3">What this feed includes</h2>
-            <p class="mb-2">Each open Blodgett block becomes its own calendar event. If Harvard adds day-specific notes like lane closures, those notes are attached to each event for that day.</p>
-            <p class="text-secondary mb-2">Only the Blodgett Pool entries from the <strong>MAC Pool &amp; Blodgett Pool</strong> table are included.</p>
-            <p class="mb-0"><a href="{source_link}">Open the current Harvard Recreation schedule page</a></p>
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 px-2">
+          <div>
+            <div class="small text-uppercase fw-semibold text-secondary mb-1" style="letter-spacing: 0.08em;">Refresh cadence</div>
+            <div class="fw-semibold">Every 2 hours · 6am-6pm ET</div>
           </div>
+          <p class="mb-0"><a href="{source_link}">Open the current Harvard Recreation schedule page</a></p>
         </div>
       </section>
     </main>
