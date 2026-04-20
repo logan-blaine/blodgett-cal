@@ -10,7 +10,7 @@ from .ics import build_calendar, render_index, write_calendar
 from .parse import ET_ZONE, parse_blodgett_blocks
 from .scrape import DEFAULT_SOURCE_URL, fetch_html, find_pool_accordion, find_pool_table, parse_html
 
-REFRESH_HOURS = {5, 13, 17}
+REFRESH_HOURS = {6, 8, 10, 12, 14, 16, 18}
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -24,7 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument(
         "--skip-outside-refresh-window",
         action="store_true",
-        help="Exit successfully without rebuilding unless the local ET hour is 5, 13, or 17.",
+        help="Exit successfully without rebuilding unless the local ET hour is 6, 8, 10, 12, 14, 16, or 18.",
     )
     build.set_defaults(func=run_build)
 

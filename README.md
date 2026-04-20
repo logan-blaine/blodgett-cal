@@ -34,7 +34,7 @@ uv run blodgett-cal build --source-url https://recreation.gocrimson.com/sports/2
 
 ## Deployment
 
-GitHub Actions builds and deploys the `site/` directory to GitHub Pages. Scheduled runs happen hourly, but the build command skips outside the target Eastern Time refresh windows of `5am`, `1pm`, and `5pm`.
+GitHub Actions builds and deploys the `site/` directory to GitHub Pages. Scheduled runs refresh every two hours between `6am` and `6pm` Eastern Time.
 
 After GitHub Pages is enabled with `Source = GitHub Actions`, the public URLs are:
 

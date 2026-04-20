@@ -317,7 +317,7 @@ def render_index(
           <div class="col-lg-4">
             <div class="rounded-4 p-4" style="background: rgba(255, 248, 241, 0.12);">
               <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.08em;">Refresh cadence</div>
-              <div class="fs-5 fw-semibold">5am, 1pm, 5pm ET</div>
+              <div class="fs-5 fw-semibold">Every 2 hours · 6am-6pm ET</div>
               <div class="small mt-2">
                 <a class="link-light link-underline-opacity-50 link-underline-opacity-100-hover" href="{source_link}">View the Harvard Recreation source page</a>
               </div>
@@ -542,8 +542,7 @@ def render_block_chip(block: PoolBlock) -> str:
 
 def current_week_dates(generated_at: datetime) -> list:
     start_date = generated_at.date()
-    monday = start_date.fromordinal(start_date.toordinal() - start_date.weekday())
-    return [monday.fromordinal(monday.toordinal() + offset) for offset in range(7)]
+    return [start_date.fromordinal(start_date.toordinal() + offset) for offset in range(7)]
 
 
 def format_date_range(start_date, end_date) -> str:

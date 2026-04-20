@@ -1,6 +1,7 @@
 from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
 
-from blodgett_cal.ics import ET_ZONE, render_index
+from blodgett_cal.ics import ET_ZONE, current_week_dates, render_index
 from blodgett_cal.models import PoolBlock
 
 
@@ -28,3 +29,23 @@ def test_render_index_includes_subscription_instructions() -> None:
     assert "This Week at a Glance" in html
     assert "10am - 3pm" in html
     assert "8 Lane CLOSED 12pm - 1:15pm" in html
+
+
+def test_current_week_dates_start_from_today() -> None:
+    dates = current_week_dates(datetime(2026, 3, 18, 9, 0, tzinfo=ET_ZONE))
+
+    assert [value.isoformat() for value in dates[:3]] == [
+        "2026-03-18",
+        "2026-03-19",
+        "2026-03-20",
+    ]
+
+
+def test_render_index_uses_eastern_current_date() -> None:
+    html = render_index(
+        generated_at=datetime(2026, 4, 20, 5, 30, tzinfo=ZoneInfo("UTC")),
+        source_url="https://example.com/source",
+    )
+
+    assert ">Mon<" in html
+    assert "Apr 20" in html
