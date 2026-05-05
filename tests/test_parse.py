@@ -21,6 +21,29 @@ def test_split_hours_into_separate_blocks() -> None:
     ]
 
 
+def test_split_hours_with_semicolon_and_slash_and_and() -> None:
+    assert [(value[0].isoformat(), value[1].isoformat()) for value in parse_time_ranges("9am - 3pm; 5:30pm - 9pm")] == [
+        ("09:00:00", "15:00:00"),
+        ("17:30:00", "21:00:00"),
+    ]
+    assert [(value[0].isoformat(), value[1].isoformat()) for value in parse_time_ranges("9am - 3pm / 5:30pm - 9pm")] == [
+        ("09:00:00", "15:00:00"),
+        ("17:30:00", "21:00:00"),
+    ]
+    assert [(value[0].isoformat(), value[1].isoformat()) for value in parse_time_ranges("9am-11am and 11:30am-5pm")] == [
+        ("09:00:00", "11:00:00"),
+        ("11:30:00", "17:00:00"),
+    ]
+
+
+def test_extracts_ranges_from_labeled_text() -> None:
+    ranges = parse_time_ranges("Open Swim 9am - 3pm, Evening Session 5:30pm - 9pm")
+    assert [(value[0].isoformat(), value[1].isoformat()) for value in ranges] == [
+        ("09:00:00", "15:00:00"),
+        ("17:30:00", "21:00:00"),
+    ]
+
+
 def test_closed_rows_generate_no_events() -> None:
     blocks = parse_blodgett_blocks(load_table(), now=datetime(2026, 3, 16, 9, 0, tzinfo=ET_ZONE))
     assert not any(block.source_date_label == "3/14" for block in blocks)

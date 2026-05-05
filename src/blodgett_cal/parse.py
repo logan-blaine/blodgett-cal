@@ -30,6 +30,10 @@ TIME_TOKEN_RE = re.compile(
     re.IGNORECASE,
 )
 RANGE_RE = re.compile(r"^\s*(?P<start>.+?)\s*-\s*(?P<end>.+?)\s*$", re.IGNORECASE)
+TIME_RANGE_IN_TEXT_RE = re.compile(
+    r"(?P<start>\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\s*-\s*(?P<end>\d{1,2}(?::\d{2})?\s*(?:am|pm)?)",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -164,17 +168,31 @@ def is_closed(hours_text: str) -> bool:
 
 
 def parse_time_ranges(hours_text: str) -> list[tuple[time, time]]:
-    normalized = normalize_text(hours_text).replace("/", ",").replace(";", ",")
-    segments = [segment.strip() for segment in normalized.split(",") if segment.strip()]
+    normalized = normalize_text(hours_text)
+    # Treat the common delimiters as equivalent separators between blocks.
+    normalized = re.sub(r"\s*(?:/|;|\|)\s*", ", ", normalized)
+    normalized = re.sub(r"\s+and\s+", ", ", normalized, flags=re.IGNORECASE)
+
+    explicit_ranges = TIME_RANGE_IN_TEXT_RE.findall(normalized)
     ranges: list[tuple[time, time]] = []
 
+    if explicit_ranges:
+        for start_text, end_text in explicit_ranges:
+            ranges.append(parse_single_range(start_text, end_text))
+        return dedupe_ranges(ranges)
+
+    # Fallback for older cleaner formats where each segment is just "start-end".
+    segments = [segment.strip() for segment in normalized.split(",") if segment.strip()]
     for segment in segments:
         match = RANGE_RE.match(segment)
         if match is None:
-            raise ValueError(f"Unsupported time range segment: {segment!r}")
+            continue
         ranges.append(parse_single_range(match.group("start"), match.group("end")))
 
-    return ranges
+    if not ranges:
+        raise ValueError(f"Unsupported time range text: {hours_text!r}")
+
+    return dedupe_ranges(ranges)
 
 
 def parse_single_range(start_text: str, end_text: str) -> tuple[time, time]:
@@ -223,6 +241,18 @@ def to_24_hour(hour: int, minute: int, meridiem: str) -> int:
 
 def to_minutes(value: time) -> int:
     return value.hour * 60 + value.minute
+
+
+def dedupe_ranges(ranges: list[tuple[time, time]]) -> list[tuple[time, time]]:
+    # Keep stable order but drop exact duplicates.
+    seen: set[tuple[time, time]] = set()
+    deduped: list[tuple[time, time]] = []
+    for item in ranges:
+        if item in seen:
+            continue
+        seen.add(item)
+        deduped.append(item)
+    return deduped
 
 
 def _find_index(headers: list[str], target: str, default: int | None = None) -> int | None:
